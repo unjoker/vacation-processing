@@ -1,0 +1,24 @@
+
+<h2>Available days: <%=@vacations.available%> </h2>
+
+<h2>Requested days: </h2>
+<ul>
+<% @vacations.requested.each do | request | %>
+    <li> <%=request %> <%= link_to "delete", vacations_request_path(date: request.from), data: {turbo_method: :delete} %> </li>
+<% end %>
+</ul>
+<h3>Request Vacations</h3>
+<% if @errors.any? %>
+  <div>
+    Errors:
+    <% @errors.each do |message|%>
+      <p><%= message %> </p>
+    <%end%>
+  </div>
+<%end%>
+
+<%= form_with url: '/vacations/request' do |form| %>
+  <%= form.label :date_range, 'Dates to request' %>
+  <%= form.text_field :date_range, class: 'datepicker' %>
+  <%= form.submit 'Request' %>
+<% end %>
