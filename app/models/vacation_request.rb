@@ -12,6 +12,6 @@ class VacationRequest < ApplicationRecord
   end
 
   def to_s()
-    "#{self.from} to #{self.to}"
+    "#{self.from} to #{self.to} (#{self.days} days)"
   end
 end

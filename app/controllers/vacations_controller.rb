@@ -18,7 +18,17 @@ class VacationsController < ApplicationController
   def cancel()
     vacations = get_vacations()
     vacations.cancel(on: Date.parse(params[:date]))
-    vacations.save
+    
+      if(vacations.save) then
+        @vacations = vacations
+        @errors = []
+        turbo_stream
+      else
+        @vacations = vacations
+        @errors = vacations.errors.full_messages
+        render :index, status: :unprocessable_entity
+      end
+    
   end
 
   def vacation_request()
@@ -26,14 +36,15 @@ class VacationsController < ApplicationController
     start_date, end_date = params[:date_range].split(' to ')
     start_date = Date.parse(start_date)
     end_date = Date.parse(end_date)
-    errors = vacations.request(from: start_date, to: end_date)
-    puts "errors: #{errors.to_a}"
-    
+    vacations.request from:start_date, to: end_date
+
     if vacations.save() then
+      puts "saving succeeded"
       @vacations = vacations
       @errors = []
-      render :index
+      turbo_stream
     else
+      puts "saving failed"
       @vacations = EmployeeVacation.find(vacations.id)
       @errors = vacations.errors.full_messages
       render :index, status: :unprocessable_entity

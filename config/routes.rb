@@ -8,7 +8,7 @@ Rails.application.routes.draw do
 
   get 'vacations', to: 'vacations#index'
 
-  post 'vacations/request', to: 'vacations#vacation_request'
+  get 'vacations/request', to: 'vacations#vacation_request'
   
   delete 'vacations/request', to: 'vacations#cancel'
 

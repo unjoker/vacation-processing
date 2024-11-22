@@ -1,12 +1,15 @@
 
-<h2>Available days: <%=@vacations.available%> </h2>
+<h2>Available days: <div id='available'><%=@vacations.available%> </div></h2>
 
 <h2>Requested days: </h2>
-<ul>
-<% @vacations.requested.each do | request | %>
-    <li> <%=request %> <%= link_to "delete", vacations_request_path(date: request.from), data: {turbo_method: :delete} %> </li>
-<% end %>
-</ul>
+<div id='requested'>
+  <ul> 
+  <% @vacations.requested.each do | request | %>
+      <li> <%=request %> <%= link_to "cancel", vacations_request_path(date: request.from), data: {turbo_method: :delete} %> </li>
+  <% end %>
+  </ul>
+</div>
+
 <h3>Request Vacations</h3>
 <% if @errors.any? %>
   <div>
@@ -17,8 +20,10 @@
   </div>
 <%end%>
 
-<%= form_with url: '/vacations/request' do |form| %>
-  <%= form.label :date_range, 'Dates to request' %>
-  <%= form.text_field :date_range, class: 'datepicker' %>
-  <%= form.submit 'Request' %>
-<% end %>
+<div id='form'>
+  <%= form_with url: '/vacations/request', method: :get, data: { turbo_stream: true } do |form| %>
+    <%= form.label :date_range, 'Dates to request' %>
+    <%= form.text_field :date_range, class: 'datepicker' %>
+    <%= form.submit 'Request' %>
+  <% end %>
+</div>

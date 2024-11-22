@@ -6,18 +6,23 @@ class EmployeeVacation < ApplicationRecord
   
   def add(days:,expire_on:)
     return if days < 1
-    self.vacation_days << VacationDay.new(initial_qty:days, days:days, expire_on:expire_on)
+    self.vacation_days.build({initial_qty:days, days:days, expire_on:expire_on})
   end
 
   def request(from:, to:)
-    days = to - from
+    days = (to - from).to_i
+    puts "days requested #{days}"
     return if days < 1
     return if days > self.available
+    puts "about to take days!"
     take(days)
-    self.requested << VacationRequest.new(from:from, to:to)
+    puts "days taken!"
+    self.requested.build({from:from, to:to})
+    puts "requested vacations: #{self.requested}"
   end
 
   def take(days)
+    puts "taking days"
     day_buckets = self.vacation_days.sort { |d| d.expire_on }
     i = 0
     while(days > 0) do
@@ -28,19 +33,21 @@ class EmployeeVacation < ApplicationRecord
   
   def cancel(on:)
     request = self.requested.find { |r| r.includes?(on) }
-    puts request
+    puts "cancelling request #{request}"
     return_days_from(request)
-    self.requested.delete(request)
+    request.mark_for_destruction
   end
 
   def return_days_from(request)
     days = request.days
+    puts "days to return #{days}"
     day_buckets = self.vacation_days.sort { |v| v.expire_on }.reverse
     i = day_buckets.size - 1
     puts i
     while(days > 0) do
       puts "buckets: #{day_buckets[i]}"
       days = day_buckets[i].add(days)
+      puts "remaining days #{days}"
       i -= 1
     end
   end

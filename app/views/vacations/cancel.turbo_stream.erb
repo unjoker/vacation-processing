@@ -1,0 +1,11 @@
+<%= turbo_stream.update "requested" do%>
+<ul>
+    <% @vacations.requested.each do | request | %>
+        <li> <%=request %> <%= link_to "cancel", vacations_request_path(date: request.from), data: {turbo_method: :delete} %> </li>
+    <% end %>
+</ul>
+<% end %>
+
+<%= turbo_stream.update "available" do%>
+    <%=@vacations.available%>
+<%end%>
